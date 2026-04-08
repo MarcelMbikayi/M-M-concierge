@@ -246,10 +246,10 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
       <div class="topbar"><h1 class="page-title">Dashboard</h1><div class="topbar-actions"><button class="btn-sm btn-ghost" onclick="showToast('Refreshed','Data is up to date.')">Refresh</button></div></div>
       <div class="content">
         <div class="stats-row">
-          <div class="stat-card gold"><div class="stat-label">Revenue (Month)</div><div class="stat-value">$4,820</div><div class="stat-sub">↑ 18% vs last month</div></div>
-          <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-value">27</div><div class="stat-sub">3 pending confirmation</div></div>
+          <div class="stat-card gold"><div class="stat-label">Revenue (Month)</div><div class="stat-value" id="stat-revenue">$0</div><div class="stat-sub">↑ 18% vs last month</div></div>
+          <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-value" id="stat-total-bookings">0</div><div class="stat-sub" id="stat-pending-count">0 pending confirmation</div></div>
           <div class="stat-card"><div class="stat-label">Airbnb Clicks</div><div class="stat-value">142</div><div class="stat-sub">This month</div></div>
-          <div class="stat-card"><div class="stat-label">Avg. Booking Value</div><div class="stat-value">$179</div><div class="stat-sub">USD per booking</div></div>
+          <div class="stat-card"><div class="stat-label">Avg. Booking Value</div><div class="stat-value" id="stat-avg-value">$0</div><div class="stat-sub">USD per booking</div></div>
         </div>
 
         <div class="two-col">
@@ -291,12 +291,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
           <div class="table-header"><span class="table-title">Recent Bookings</span><button class="btn-sm btn-gold" onclick="showPage('bookings')">View All</button></div>
           <table>
             <thead><tr><th>Guest</th><th>Experience</th><th>Date</th><th>Amount</th><th>Payment</th><th>Status</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>Sophie Bourgeois</td><td>Congo River Cruise</td><td>Apr 12, 2025</td><td>$440</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)">Confirm</button></td></tr>
-              <tr><td>Marcus Kato</td><td>Lola ya Bonobo</td><td>Apr 14, 2025</td><td>$285</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)">Confirm</button></td></tr>
-              <tr><td>Amara Traoré</td><td>VIP City Tour</td><td>Apr 10, 2025</td><td>$180</td><td>Reserve</td><td><span class="badge-status status-reserved">Reserved</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)">Confirm</button></td></tr>
-              <tr><td>Jean-Paul M.</td><td>Cultural Immersion</td><td>Apr 8, 2025</td><td>$170</td><td>M-Pesa</td><td><span class="badge-status status-confirmed">Confirmed</span></td><td><button class="btn-sm btn-ghost">Details</button></td></tr>
-            </tbody>
+            <tbody id="recentBookingsBody"></tbody>
           </table>
         </div>
       </div>
@@ -307,10 +302,10 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
       <div class="topbar"><h1 class="page-title">Bookings</h1><div class="topbar-actions"><input class="search-input" placeholder="Search bookings..."/></div></div>
       <div class="content">
         <div class="stats-row">
-          <div class="stat-card"><div class="stat-label">Pending M-Pesa</div><div class="stat-value" style="color:var(--warning)">3</div><div class="stat-sub">Awaiting payment confirmation</div></div>
-          <div class="stat-card"><div class="stat-label">Confirmed</div><div class="stat-value" style="color:var(--success)">18</div><div class="stat-sub">This month</div></div>
-          <div class="stat-card"><div class="stat-label">Reserved</div><div class="stat-value" style="color:var(--gold)">4</div><div class="stat-sub">Pay later</div></div>
-          <div class="stat-card"><div class="stat-label">Cancelled</div><div class="stat-value" style="color:var(--danger)">2</div><div class="stat-sub">This month</div></div>
+          <div class="stat-card"><div class="stat-label">Pending M-Pesa</div><div class="stat-value" id="stat-pending" style="color:var(--warning)">0</div><div class="stat-sub">Awaiting payment confirmation</div></div>
+          <div class="stat-card"><div class="stat-label">Confirmed</div><div class="stat-value" id="stat-confirmed" style="color:var(--success)">0</div><div class="stat-sub">This month</div></div>
+          <div class="stat-card"><div class="stat-label">Reserved</div><div class="stat-value" id="stat-reserved" style="color:var(--gold)">0</div><div class="stat-sub">Pay later</div></div>
+          <div class="stat-card"><div class="stat-label">Cancelled</div><div class="stat-value" id="stat-cancelled" style="color:var(--danger)">0</div><div class="stat-sub">This month</div></div>
         </div>
         <div class="table-wrap">
           <div class="table-header"><span class="table-title">All Bookings</span>
@@ -322,13 +317,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
           </div>
           <table>
             <thead><tr><th>Ref</th><th>Guest</th><th>Experience</th><th>Date</th><th>Guests</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
-              <tr><td style="color:var(--muted)">#MM025</td><td>Sophie Bourgeois</td><td>Congo River Cruise</td><td>Apr 12</td><td>2</td><td>$440</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)" style="margin-right:4px">Confirm</button><button class="btn-sm btn-danger" onclick="cancelBooking(this)">Cancel</button></td></tr>
-              <tr><td style="color:var(--muted)">#MM024</td><td>Marcus Kato</td><td>Lola ya Bonobo</td><td>Apr 14</td><td>3</td><td>$285</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)" style="margin-right:4px">Confirm</button><button class="btn-sm btn-danger" onclick="cancelBooking(this)">Cancel</button></td></tr>
-              <tr><td style="color:var(--muted)">#MM023</td><td>Amara Traoré</td><td>VIP City Tour</td><td>Apr 10</td><td>1</td><td>$180</td><td>Reserve</td><td><span class="badge-status status-reserved">Reserved</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)" style="margin-right:4px">Confirm</button><button class="btn-sm btn-danger" onclick="cancelBooking(this)">Cancel</button></td></tr>
-              <tr><td style="color:var(--muted)">#MM022</td><td>Jean-Paul M.</td><td>Cultural Immersion</td><td>Apr 8</td><td>2</td><td>$170</td><td>M-Pesa</td><td><span class="badge-status status-confirmed">Confirmed</span></td><td><button class="btn-sm btn-ghost">Details</button></td></tr>
-              <tr><td style="color:var(--muted)">#MM021</td><td>Claire Fontaine</td><td>Fine Dining</td><td>Apr 6</td><td>2</td><td>$300</td><td>M-Pesa</td><td><span class="badge-status status-confirmed">Confirmed</span></td><td><button class="btn-sm btn-ghost">Details</button></td></tr>
-            </tbody>
+            <tbody id="allBookingsBody"></tbody>
           </table>
         </div>
       </div>
@@ -472,22 +461,22 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
     <div class="modal-h"><span class="modal-h-title">New Experience</span><button class="modal-x" onclick="closeExpModal()">✕</button></div>
     <div class="modal-b">
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-ctrl" placeholder="Experience title in English"/></div>
-        <div class="form-group"><label class="form-label">Title (FR)</label><input class="form-ctrl" placeholder="Titre de l'expérience en français"/></div>
+        <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-ctrl" id="newExpTitleEn" placeholder="Experience title in English"/></div>
+        <div class="form-group"><label class="form-label">Title (FR)</label><input class="form-ctrl" id="newExpTitleFr" placeholder="Titre de l'expérience en français"/></div>
       </div>
       <div class="form-grid-3">
-        <div class="form-group"><label class="form-label">Price (USD)</label><input class="form-ctrl" type="number" placeholder="150"/></div>
-        <div class="form-group"><label class="form-label">Duration</label><input class="form-ctrl" placeholder="Full Day (11h)"/></div>
-        <div class="form-group"><label class="form-label">Category</label><select class="form-ctrl"><option>City Tours</option><option>Wildlife</option><option>Culture</option><option>Food</option><option>VIP</option></select></div>
+        <div class="form-group"><label class="form-label">Price (USD)</label><input class="form-ctrl" id="newExpPrice" type="number" placeholder="150"/></div>
+        <div class="form-group"><label class="form-label">Duration</label><input class="form-ctrl" id="newExpDuration" placeholder="Full Day (11h)"/></div>
+        <div class="form-group"><label class="form-label">Category</label><select class="form-ctrl" id="newExpCat"><option>City Tours</option><option>Wildlife</option><option>Culture</option><option>Food</option><option>VIP</option></select></div>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Group Type</label><select class="form-ctrl"><option>Private</option><option>Group</option><option>Private / Group</option></select></div>
-        <div class="form-group"><label class="form-label">Airbnb URL</label><input class="form-ctrl" placeholder="https://airbnb.com/experiences/..."/></div>
+        <div class="form-group"><label class="form-label">Group Type</label><select class="form-ctrl" id="newExpGroup"><option>Private</option><option>Group</option><option>Private / Group</option></select></div>
+        <div class="form-group"><label class="form-label">Airbnb URL</label><input class="form-ctrl" id="newExpAirbnb" placeholder="https://airbnb.com/experiences/..."/></div>
       </div>
-      <div class="form-group"><label class="form-label">Description (EN)</label><textarea class="form-ctrl" rows="3" placeholder="Short description..."></textarea></div>
-      <div class="form-group"><label class="form-label">Description (FR)</label><textarea class="form-ctrl" rows="3" placeholder="Description courte..."></textarea></div>
-      <div class="toggle-row" style="margin-top:0.5rem"><div><div class="toggle-label">Enable Direct Booking</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
-      <div class="toggle-row"><div><div class="toggle-label">Published</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+      <div class="form-group"><label class="form-label">Description (EN)</label><textarea class="form-ctrl" id="newExpDescEn" rows="3" placeholder="Short description..."></textarea></div>
+      <div class="form-group"><label class="form-label">Description (FR)</label><textarea class="form-ctrl" id="newExpDescFr" rows="3" placeholder="Description courte..."></textarea></div>
+      <div class="toggle-row" style="margin-top:0.5rem"><div><div class="toggle-label">Enable Direct Booking</div></div><label class="toggle"><input type="checkbox" id="newExpDirect" checked/><span class="toggle-slider"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Published</div></div><label class="toggle"><input type="checkbox" id="newExpPublished" checked/><span class="toggle-slider"></span></label></div>
     </div>
     <div class="modal-f"><button class="btn-sm btn-ghost" onclick="closeExpModal()">Cancel</button><button class="btn-sm btn-gold" onclick="saveExp()">Save Experience</button></div>
   </div>
@@ -497,6 +486,14 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 <div class="toast" id="toast"><strong id="toastTitle"></strong><span id="toastMsg"></span></div>
 
 <script>
+const bookingsData = [
+  {ref:'#MM025', guest:'Sophie Bourgeois', exp:'Congo River Cruise', date:'Apr 12', guests:2, total:440, payment:'M-Pesa', status:'Pending'},
+  {ref:'#MM024', guest:'Marcus Kato', exp:'Lola ya Bonobo Visit', date:'Apr 14', guests:3, total:285, payment:'M-Pesa', status:'Pending'},
+  {ref:'#MM023', guest:'Amara Traoré', exp:'VIP City Tour', date:'Apr 10', guests:1, total:180, payment:'Reserve', status:'Reserved'},
+  {ref:'#MM022', guest:'Jean-Paul M.', exp:'Cultural Immersion Day', date:'Apr 8', guests:2, total:170, payment:'M-Pesa', status:'Confirmed'},
+  {ref:'#MM021', guest:'Claire Fontaine', exp:'Fine Dining & Nightlife', date:'Apr 6', guests:2, total:300, payment:'M-Pesa', status:'Confirmed'}
+];
+
 const expData=[
   {title:'Kinshasa VIP City Tour',cat:'City Tours',price:180,duration:'Full Day',airbnb:true,direct:true,status:'Published'},
   {title:'Lola ya Bonobo Luxury Visit',cat:'Wildlife',price:95,duration:'Half Day',airbnb:true,direct:true,status:'Published'},
@@ -519,6 +516,66 @@ function renderExpTable(){
     </tr>`).join('');
 }
 
+function renderBookingsTables(){
+  const allBody = document.getElementById('allBookingsBody');
+  const recentBody = document.getElementById('recentBookingsBody');
+
+  const getBadge = (status) => {
+    const cls = status.toLowerCase();
+    return `<span class="badge-status status-${cls}">${status}</span>`;
+  };
+
+  const getActions = (b, i) => {
+    if(b.status === 'Confirmed' || b.status === 'Cancelled') return '<button class="btn-sm btn-ghost">Details</button>';
+    return `<button class="btn-sm btn-gold" onclick="confirmBooking(${i})" style="margin-right:4px">Confirm</button>
+            <button class="btn-sm btn-danger" onclick="cancelBooking(${i})">Cancel</button>`;
+  };
+
+  allBody.innerHTML = bookingsData.map((b, i) => `
+    <tr>
+      <td style="color:var(--muted)">${b.ref}</td>
+      <td>${b.guest}</td>
+      <td>${b.exp}</td>
+      <td>${b.date}</td>
+      <td>${b.guests}</td>
+      <td>$${b.total}</td>
+      <td>${b.payment}</td>
+      <td>${getBadge(b.status)}</td>
+      <td>${getActions(b, i)}</td>
+    </tr>`).join('');
+
+  recentBody.innerHTML = bookingsData.slice(0, 4).map((b, i) => `
+    <tr>
+      <td>${b.guest}</td>
+      <td>${b.exp}</td>
+      <td>${b.date}</td>
+      <td>$${b.total}</td>
+      <td>${b.payment}</td>
+      <td>${getBadge(b.status)}</td>
+      <td>${b.status === 'Pending' || b.status === 'Reserved' ? `<button class="btn-sm btn-gold" onclick="confirmBooking(${i})">Confirm</button>` : `<button class="btn-sm btn-ghost">Details</button>`}</td>
+    </tr>`).join('');
+}
+
+function updateDashboardStats(){
+  const confirmed = bookingsData.filter(b => b.status === 'Confirmed');
+  const revenue = confirmed.reduce((sum, b) => sum + b.total, 0);
+  const total = bookingsData.length;
+  const pending = bookingsData.filter(b => b.status === 'Pending').length;
+  const reserved = bookingsData.filter(b => b.status === 'Reserved').length;
+  const cancelled = bookingsData.filter(b => b.status === 'Cancelled').length;
+  const avg = confirmed.length > 0 ? (revenue / confirmed.length) : 0;
+
+  document.getElementById('stat-revenue').textContent = `$${revenue.toLocaleString()}`;
+  document.getElementById('stat-total-bookings').textContent = total;
+  document.getElementById('stat-pending-count').textContent = `${pending} pending confirmation`;
+  document.getElementById('stat-avg-value').textContent = `$${Math.round(avg)}`;
+
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-confirmed').textContent = confirmed.length;
+  document.getElementById('stat-reserved').textContent = reserved;
+  document.getElementById('stat-cancelled').textContent = cancelled;
+}
+
 function deleteExp(i){expData.splice(i,1);renderExpTable();showToast('Deleted','Experience removed.');}
 
 function showPage(id){
@@ -527,11 +584,15 @@ function showPage(id){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   event.currentTarget.classList.add('active');
   if(id==='experiences') renderExpTable();
+  if(id==='bookings') renderBookingsTables();
+  if(id==='dashboard') renderBookingsTables();
 }
 
 function doLogin(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('adminApp').classList.add('visible');
+  updateDashboardStats();
+  renderBookingsTables();
 }
 
 function doLogout(){
@@ -539,27 +600,38 @@ function doLogout(){
   document.getElementById('loginScreen').style.display='flex';
 }
 
-function confirmBooking(btn){
-  const row = btn.closest('tr');
-  const badge = row.querySelector('.badge-status');
-  badge.className='badge-status status-confirmed';
-  badge.textContent='Confirmed';
-  btn.remove();
+function confirmBooking(i){
+  bookingsData[i].status = 'Confirmed';
+  updateDashboardStats();
+  renderBookingsTables();
   showToast('Confirmed','Booking confirmed. Confirmation email sent.');
 }
 
-function cancelBooking(btn){
-  const row = btn.closest('tr');
-  const badge = row.querySelector('.badge-status');
-  badge.className='badge-status status-cancelled';
-  badge.textContent='Cancelled';
-  btn.closest('td').querySelectorAll('button').forEach(b=>b.remove());
+function cancelBooking(i){
+  bookingsData[i].status = 'Cancelled';
+  updateDashboardStats();
+  renderBookingsTables();
   showToast('Cancelled','Booking has been cancelled.');
 }
 
 function openExpModal(){document.getElementById('expModal').classList.add('open');}
 function closeExpModal(){document.getElementById('expModal').classList.remove('open');}
-function saveExp(){closeExpModal();showToast('Saved','New experience has been created.');}
+function saveExp(){
+  const title = document.getElementById('newExpTitleEn').value;
+  const cat = document.getElementById('newExpCat').value;
+  const price = parseInt(document.getElementById('newExpPrice').value)||0;
+  const duration = document.getElementById('newExpDuration').value;
+  const airbnb = document.getElementById('newExpAirbnb').value.length > 0;
+  const direct = document.getElementById('newExpDirect').checked;
+
+  expData.push({
+    title, cat, price, duration, airbnb, direct, status:'Published'
+  });
+
+  renderExpTable();
+  closeExpModal();
+  showToast('Saved','New experience has been created.');
+}
 
 function showToast(title,msg){
   document.getElementById('toastTitle').textContent=title;
