@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>M&M Concierge — Admin Dashboard</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --black:#0A0A08;--gold:#C9A84C;--gold-light:#E8D08A;--gold-dark:#9A7A30;
+  --white:#F5F2EC;--off-white:#FAF8F4;--green:#1B4332;--green-light:#2D6A4F;
+  --bg:#0F0F0D;--surface:#161614;--surface2:#1E1E1B;--border:rgba(201,168,76,0.18);
+  --text:rgba(245,242,236,0.9);--muted:rgba(245,242,236,0.4);
+  --danger:#C0392B;--success:#27AE60;--warning:#E67E22;
+  --font-display:'Cormorant Garamond',serif;--font-body:'Jost',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;min-height:100vh;display:flex}
+
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;width:100%;background:var(--bg);position:fixed;inset:0;z-index:100}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3rem;width:100%;max-width:400px;margin:1.5rem}
+.login-logo{font-family:var(--font-display);font-size:1.8rem;color:var(--gold);text-align:center;margin-bottom:0.5rem;letter-spacing:0.08em;font-weight:600}
+.login-sub{font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:2.5rem}
+.login-label{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.5rem}
+.login-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.8rem 1rem;font-size:0.9rem;font-family:var(--font-body);border-radius:4px;outline:none;margin-bottom:1rem;transition:border-color 0.2s}
+.login-input:focus{border-color:var(--gold)}
+.login-btn{width:100%;padding:0.9rem;background:var(--gold);color:var(--black);font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;border-radius:4px;font-family:var(--font-body);transition:background 0.2s;margin-top:0.5rem}
+.login-btn:hover{background:var(--gold-light)}
+.login-hint{font-size:0.72rem;color:var(--muted);text-align:center;margin-top:1rem}
+
+/* SIDEBAR */
+#adminApp{display:none;width:100%;min-height:100vh}
+#adminApp.visible{display:flex}
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sidebar-logo{padding:1.75rem 1.5rem;border-bottom:1px solid var(--border)}
+.sidebar-logo-text{font-family:var(--font-display);font-size:1.2rem;color:var(--gold);font-weight:600;letter-spacing:0.06em}
+.sidebar-role{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:0.25rem}
+.sidebar-nav{flex:1;padding:1.25rem 0;overflow-y:auto}
+.nav-section-label{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);padding:0 1.25rem;margin-bottom:0.5rem;margin-top:1.25rem}
+.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 1.25rem;color:var(--muted);font-size:0.82rem;cursor:pointer;transition:color 0.2s,background 0.2s;border-left:2px solid transparent;letter-spacing:0.02em}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,0.05)}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.sidebar-footer{padding:1.25rem;border-top:1px solid var(--border)}
+.sidebar-user{display:flex;align-items:center;gap:0.75rem}
+.user-avatar{width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:500;color:var(--gold-light);flex-shrink:0}
+.user-name{font-size:0.82rem;color:var(--text)}
+.user-role{font-size:0.68rem;color:var(--muted)}
+.logout-btn{background:transparent;border:none;color:var(--muted);font-size:0.72rem;cursor:pointer;margin-left:auto;font-family:var(--font-body);letter-spacing:0.05em;transition:color 0.2s}
+.logout-btn:hover{color:var(--danger)}
+
+/* MAIN CONTENT */
+.main{margin-left:240px;flex:1;padding:0}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:40}
+.page-title{font-family:var(--font-display);font-size:1.5rem;font-weight:400;color:var(--white)}
+.topbar-actions{display:flex;gap:0.75rem}
+.btn-sm{padding:0.45rem 1rem;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;border-radius:3px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;border:none}
+.btn-gold{background:var(--gold);color:var(--black)}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:rgba(245,242,236,0.25)}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid rgba(192,57,43,0.3)}
+.btn-danger:hover{background:rgba(192,57,43,0.1)}
+.content{padding:2rem}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem}
+.stat-label{font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.stat-value{font-family:var(--font-display);font-size:2rem;font-weight:400;color:var(--white);line-height:1}
+.stat-sub{font-size:0.72rem;color:var(--muted);margin-top:0.35rem}
+.stat-card.gold .stat-value{color:var(--gold)}
+
+/* TABLES */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.table-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem}
+.table-title{font-size:0.85rem;font-weight:500;color:var(--text)}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid var(--border)}
+th{text-align:left;padding:0.85rem 1.5rem;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);font-weight:400}
+td{padding:0.85rem 1.5rem;font-size:0.82rem;color:var(--text);border-bottom:1px solid rgba(201,168,76,0.08)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.badge-status{padding:0.25rem 0.75rem;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:100px;font-weight:500}
+.status-confirmed{background:rgba(39,174,96,0.12);color:#2ECC71}
+.status-pending{background:rgba(230,126,34,0.12);color:#E67E22}
+.status-reserved{background:rgba(201,168,76,0.12);color:var(--gold)}
+.status-cancelled{background:rgba(192,57,43,0.1);color:#E74C3C}
+
+/* SEARCH */
+.search-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.45rem 0.9rem;font-size:0.82rem;font-family:var(--font-body);border-radius:3px;outline:none;width:200px;transition:border-color 0.2s}
+.search-input:focus{border-color:var(--gold)}
+.search-input::placeholder{color:var(--muted)}
+
+/* FORM PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.panel-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.panel-title{font-size:0.9rem;font-weight:500;color:var(--text)}
+.panel-body{padding:1.5rem}
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.form-ctrl{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.7rem 0.9rem;font-size:0.85rem;font-family:var(--font-body);border-radius:3px;outline:none;transition:border-color 0.2s}
+.form-ctrl:focus{border-color:var(--gold)}
+.form-ctrl option{background:var(--surface)}
+textarea.form-ctrl{resize:vertical;min-height:80px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 0;border-bottom:1px solid rgba(201,168,76,0.08)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:0.85rem;color:var(--text)}
+.toggle-desc{font-size:0.72rem;color:var(--muted);margin-top:0.15rem}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border);border-radius:22px;cursor:pointer;transition:0.2s}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:0.2s}
+.toggle input:checked + .toggle-slider{background:rgba(201,168,76,0.2);border-color:var(--gold)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(18px);background:var(--gold)}
+
+/* PAGE SECTIONS */
+.page-section{display:none}
+.page-section.active{display:block}
+
+/* GRID LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+
+/* CHART PLACEHOLDER */
+.chart-placeholder{background:var(--surface2);border-radius:4px;padding:1.5rem;position:relative;overflow:hidden}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px}
+.chart-bar{flex:1;border-radius:2px 2px 0 0;background:linear-gradient(to top,var(--gold-dark),var(--gold));opacity:0.7;transition:opacity 0.2s}
+.chart-bar:hover{opacity:1}
+.chart-labels{display:flex;gap:8px;margin-top:0.5rem}
+.chart-label{flex:1;font-size:0.62rem;color:var(--muted);text-align:center}
+
+/* NOTIFICATION */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface);border:1px solid var(--gold);color:var(--text);padding:1rem 1.5rem;border-radius:4px;z-index:200;font-size:0.82rem;transform:translateY(100px);opacity:0;transition:all 0.3s;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast strong{color:var(--gold);display:block;margin-bottom:0.2rem}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem;color:var(--muted)}
+.empty-state svg{width:40px;height:40px;margin:0 auto 1rem;display:block;opacity:0.3}
+.empty-state p{font-size:0.85rem}
+
+/* MOBILE */
+@media(max-width:900px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .form-grid,.form-grid-3{grid-template-columns:1fr}
+  .two-col,.three-col{grid-template-columns:1fr}
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .content{padding:1.25rem}
+}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,10,8,0.85);backdrop-filter:blur(6px);z-index:150;display:none;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:6px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto}
+.modal-h{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-h-title{font-size:1rem;font-weight:500;color:var(--white)}
+.modal-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;font-family:var(--font-body)}
+.modal-x:hover{color:var(--white)}
+.modal-b{padding:1.5rem}
+.modal-f{padding:0 1.5rem 1.5rem;display:flex;gap:0.75rem;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">M&M Concierge</div>
+    <div class="login-sub">Admin Dashboard</div>
+    <label class="login-label">Email</label>
+    <input type="email" class="login-input" id="loginEmail" placeholder="admin@mmconcierge.cd" value="admin@mmconcierge.cd"/>
+    <label class="login-label">Password</label>
+    <input type="password" class="login-input" id="loginPass" placeholder="••••••••" value="admin123"/>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <p class="login-hint">Demo: any credentials work to preview</p>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">M&M Concierge</div>
+      <div class="sidebar-role">Admin Panel</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-section-label">Operations</div>
+      <div class="nav-item" onclick="showPage('bookings')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Bookings
+        <span style="margin-left:auto;background:var(--gold);color:var(--black);font-size:0.62rem;padding:1px 7px;border-radius:100px;font-weight:600">3</span>
+      </div>
+      <div class="nav-section-label">Content</div>
+      <div class="nav-item" onclick="showPage('experiences')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
+        Experiences
+      </div>
+      <div class="nav-item" onclick="showPage('transport')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v9a2 2 0 01-2 2h-2M7 21a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
+        Transport
+      </div>
+      <div class="nav-item" onclick="showPage('testimonials')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Testimonials
+      </div>
+      <div class="nav-section-label">Settings</div>
+      <div class="nav-item" onclick="showPage('payments')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Payment Settings
+      </div>
+      <div class="nav-item" onclick="showPage('settings')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Site Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar">AD</div>
+        <div><div class="user-name">Admin</div><div class="user-role">Administrator</div></div>
+        <button class="logout-btn" onclick="doLogout()">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page-section active" id="page-dashboard">
+      <div class="topbar"><h1 class="page-title">Dashboard</h1><div class="topbar-actions"><button class="btn-sm btn-ghost" onclick="showToast('Refreshed','Data is up to date.')">Refresh</button></div></div>
+      <div class="content">
+        <div class="stats-row">
+          <div class="stat-card gold"><div class="stat-label">Revenue (Month)</div><div class="stat-value">$4,820</div><div class="stat-sub">↑ 18% vs last month</div></div>
+          <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-value">27</div><div class="stat-sub">3 pending confirmation</div></div>
+          <div class="stat-card"><div class="stat-label">Airbnb Clicks</div><div class="stat-value">142</div><div class="stat-sub">This month</div></div>
+          <div class="stat-card"><div class="stat-label">Avg. Booking Value</div><div class="stat-value">$179</div><div class="stat-sub">USD per booking</div></div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Bookings by Month</span></div>
+            <div class="panel-body">
+              <div class="chart-placeholder">
+                <div class="chart-bars">
+                  <div class="chart-bar" style="height:35%"></div>
+                  <div class="chart-bar" style="height:55%"></div>
+                  <div class="chart-bar" style="height:42%"></div>
+                  <div class="chart-bar" style="height:70%"></div>
+                  <div class="chart-bar" style="height:60%"></div>
+                  <div class="chart-bar" style="height:85%"></div>
+                  <div class="chart-bar" style="height:95%"></div>
+                </div>
+                <div class="chart-labels">
+                  <div class="chart-label">Oct</div><div class="chart-label">Nov</div><div class="chart-label">Dec</div>
+                  <div class="chart-label">Jan</div><div class="chart-label">Feb</div><div class="chart-label">Mar</div><div class="chart-label">Apr</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Top Experiences</span></div>
+            <div class="panel-body" style="padding:0">
+              <table style="width:100%">
+                <tr><td style="padding:0.85rem 1.25rem;font-size:0.82rem">Congo River Sunset Cruise</td><td style="text-align:right;padding:0.85rem 1.25rem;color:var(--gold)">$4,400</td></tr>
+                <tr><td style="padding:0.85rem 1.25rem;font-size:0.82rem">Kinshasa VIP City Tour</td><td style="text-align:right;padding:0.85rem 1.25rem;color:var(--gold)">$2,160</td></tr>
+                <tr><td style="padding:0.85rem 1.25rem;font-size:0.82rem">Lola ya Bonobo Visit</td><td style="text-align:right;padding:0.85rem 1.25rem;color:var(--gold)">$1,425</td></tr>
+                <tr><td style="padding:0.85rem 1.25rem;font-size:0.82rem">Fine Dining & Nightlife</td><td style="text-align:right;padding:0.85rem 1.25rem;color:var(--gold)">$900</td></tr>
+                <tr><td style="padding:0.85rem 1.25rem;font-size:0.82rem">Cultural Immersion Day</td><td style="text-align:right;padding:0.85rem 1.25rem;color:var(--gold)">$680</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-header"><span class="table-title">Recent Bookings</span><button class="btn-sm btn-gold" onclick="showPage('bookings')">View All</button></div>
+          <table>
+            <thead><tr><th>Guest</th><th>Experience</th><th>Date</th><th>Amount</th><th>Payment</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Sophie Bourgeois</td><td>Congo River Cruise</td><td>Apr 12, 2025</td><td>$440</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)">Confirm</button></td></tr>
+              <tr><td>Marcus Kato</td><td>Lola ya Bonobo</td><td>Apr 14, 2025</td><td>$285</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)">Confirm</button></td></tr>
+              <tr><td>Amara Traoré</td><td>VIP City Tour</td><td>Apr 10, 2025</td><td>$180</td><td>Reserve</td><td><span class="badge-status status-reserved">Reserved</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)">Confirm</button></td></tr>
+              <tr><td>Jean-Paul M.</td><td>Cultural Immersion</td><td>Apr 8, 2025</td><td>$170</td><td>M-Pesa</td><td><span class="badge-status status-confirmed">Confirmed</span></td><td><button class="btn-sm btn-ghost">Details</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="page-section" id="page-bookings">
+      <div class="topbar"><h1 class="page-title">Bookings</h1><div class="topbar-actions"><input class="search-input" placeholder="Search bookings..."/></div></div>
+      <div class="content">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Pending M-Pesa</div><div class="stat-value" style="color:var(--warning)">3</div><div class="stat-sub">Awaiting payment confirmation</div></div>
+          <div class="stat-card"><div class="stat-label">Confirmed</div><div class="stat-value" style="color:var(--success)">18</div><div class="stat-sub">This month</div></div>
+          <div class="stat-card"><div class="stat-label">Reserved</div><div class="stat-value" style="color:var(--gold)">4</div><div class="stat-sub">Pay later</div></div>
+          <div class="stat-card"><div class="stat-label">Cancelled</div><div class="stat-value" style="color:var(--danger)">2</div><div class="stat-sub">This month</div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header"><span class="table-title">All Bookings</span>
+            <div style="display:flex;gap:0.5rem">
+              <select class="search-input" style="width:auto">
+                <option>All Statuses</option><option>Pending</option><option>Confirmed</option><option>Reserved</option><option>Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Ref</th><th>Guest</th><th>Experience</th><th>Date</th><th>Guests</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--muted)">#MM025</td><td>Sophie Bourgeois</td><td>Congo River Cruise</td><td>Apr 12</td><td>2</td><td>$440</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)" style="margin-right:4px">Confirm</button><button class="btn-sm btn-danger" onclick="cancelBooking(this)">Cancel</button></td></tr>
+              <tr><td style="color:var(--muted)">#MM024</td><td>Marcus Kato</td><td>Lola ya Bonobo</td><td>Apr 14</td><td>3</td><td>$285</td><td>M-Pesa</td><td><span class="badge-status status-pending">Pending</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)" style="margin-right:4px">Confirm</button><button class="btn-sm btn-danger" onclick="cancelBooking(this)">Cancel</button></td></tr>
+              <tr><td style="color:var(--muted)">#MM023</td><td>Amara Traoré</td><td>VIP City Tour</td><td>Apr 10</td><td>1</td><td>$180</td><td>Reserve</td><td><span class="badge-status status-reserved">Reserved</span></td><td><button class="btn-sm btn-gold" onclick="confirmBooking(this)" style="margin-right:4px">Confirm</button><button class="btn-sm btn-danger" onclick="cancelBooking(this)">Cancel</button></td></tr>
+              <tr><td style="color:var(--muted)">#MM022</td><td>Jean-Paul M.</td><td>Cultural Immersion</td><td>Apr 8</td><td>2</td><td>$170</td><td>M-Pesa</td><td><span class="badge-status status-confirmed">Confirmed</span></td><td><button class="btn-sm btn-ghost">Details</button></td></tr>
+              <tr><td style="color:var(--muted)">#MM021</td><td>Claire Fontaine</td><td>Fine Dining</td><td>Apr 6</td><td>2</td><td>$300</td><td>M-Pesa</td><td><span class="badge-status status-confirmed">Confirmed</span></td><td><button class="btn-sm btn-ghost">Details</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCES -->
+    <div class="page-section" id="page-experiences">
+      <div class="topbar"><h1 class="page-title">Experiences</h1><div class="topbar-actions"><button class="btn-sm btn-gold" onclick="openExpModal()">+ New Experience</button></div></div>
+      <div class="content">
+        <div class="table-wrap">
+          <div class="table-header"><span class="table-title">5 experiences published</span><input class="search-input" placeholder="Search..."/></div>
+          <table>
+            <thead><tr><th>Title</th><th>Category</th><th>Price</th><th>Duration</th><th>Airbnb</th><th>Direct Booking</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="expTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSPORT -->
+    <div class="page-section" id="page-transport">
+      <div class="topbar"><h1 class="page-title">Transport</h1><div class="topbar-actions"><button class="btn-sm btn-gold" onclick="showToast('Add Vehicle','Form coming soon.')">+ Add Vehicle</button></div></div>
+      <div class="content">
+        <div class="two-col">
+          <div class="table-wrap">
+            <div class="table-header"><span class="table-title">Vehicles</span></div>
+            <table>
+              <thead><tr><th>Vehicle</th><th>Type</th><th>Capacity</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Toyota Prado — Gold</td><td>4x4 SUV</td><td>4 pax</td><td><span class="badge-status status-confirmed">Available</span></td></tr>
+                <tr><td>Toyota Fortuner — Black</td><td>4x4 SUV</td><td>5 pax</td><td><span class="badge-status status-confirmed">Available</span></td></tr>
+                <tr><td>Toyota HiAce — White</td><td>Van</td><td>10 pax</td><td><span class="badge-status status-pending">On trip</span></td></tr>
+                <tr><td>Land Cruiser V8</td><td>4x4 SUV</td><td>6 pax</td><td><span class="badge-status status-confirmed">Available</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <div class="table-header"><span class="table-title">Drivers</span></div>
+            <table>
+              <thead><tr><th>Driver</th><th>Phone</th><th>Assigned Vehicle</th></tr></thead>
+              <tbody>
+                <tr><td>Emmanuel K.</td><td>+243 81 ...</td><td>Toyota Prado</td></tr>
+                <tr><td>Didier M.</td><td>+243 82 ...</td><td>Fortuner — Black</td></tr>
+                <tr><td>Serge B.</td><td>+243 84 ...</td><td>HiAce</td></tr>
+                <tr><td>Patrick N.</td><td>+243 85 ...</td><td>Land Cruiser</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="page-section" id="page-testimonials">
+      <div class="topbar"><h1 class="page-title">Testimonials</h1><div class="topbar-actions"><button class="btn-sm btn-gold" onclick="showToast('Add Testimonial','Form coming soon.')">+ Add Testimonial</button></div></div>
+      <div class="content">
+        <div class="table-wrap">
+          <div class="table-header"><span class="table-title">3 testimonials published</span></div>
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Experience</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>Sophie B.</td><td>French Expat</td><td>Congo River Cruise</td><td>★★★★★</td><td><span class="badge-status status-confirmed">Published</span></td><td><button class="btn-sm btn-ghost">Edit</button></td></tr>
+              <tr><td>Marcus K.</td><td>NGO Director</td><td>Lola ya Bonobo</td><td>★★★★★</td><td><span class="badge-status status-confirmed">Published</span></td><td><button class="btn-sm btn-ghost">Edit</button></td></tr>
+              <tr><td>Amara T.</td><td>Tourist, London</td><td>VIP City Tour</td><td>★★★★★</td><td><span class="badge-status status-confirmed">Published</span></td><td><button class="btn-sm btn-ghost">Edit</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT SETTINGS -->
+    <div class="page-section" id="page-payments">
+      <div class="topbar"><h1 class="page-title">Payment Settings</h1><div class="topbar-actions"><button class="btn-sm btn-gold" onclick="showToast('Saved','Payment settings updated.')">Save Changes</button></div></div>
+      <div class="content">
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Payment Methods</span></div>
+            <div class="panel-body">
+              <div class="toggle-row"><div><div class="toggle-label">M-Pesa (Vodacom DRC)</div><div class="toggle-desc">Manual confirmation flow</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div><div class="toggle-label">Airbnb Redirect</div><div class="toggle-desc">Link to experience on Airbnb</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div><div class="toggle-label">Reserve & Pay Later</div><div class="toggle-desc">WhatsApp confirmation flow</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div><div class="toggle-label">Stripe Card Payments</div><div class="toggle-desc">Coming soon — feature flagged</div></div><label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">M-Pesa Configuration</span></div>
+            <div class="panel-body">
+              <div class="form-group"><label class="form-label">Vodacom DRC M-Pesa Number</label><input class="form-ctrl" value="+243 81 000 0000"/></div>
+              <div class="form-group"><label class="form-label">Account Name</label><input class="form-ctrl" value="M&M Concierge SARL"/></div>
+              <div class="form-group"><label class="form-label">Payment Instructions (EN)</label><textarea class="form-ctrl">Open M-Pesa on your Vodacom DRC number, select Send Money, enter the number above, use your name as reference, then send us the confirmation SMS on WhatsApp.</textarea></div>
+              <div class="form-group"><label class="form-label">Payment Instructions (FR)</label><textarea class="form-ctrl">Ouvrez M-Pesa sur votre numéro Vodacom DRC, sélectionnez Envoyer de l'argent, entrez le numéro ci-dessus, utilisez votre nom comme référence, puis envoyez-nous le SMS de confirmation sur WhatsApp.</textarea></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Currency Settings</span></div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Primary Currency</label><select class="form-ctrl"><option>USD (US Dollar)</option></select></div>
+              <div class="form-group"><label class="form-label">USD/CDF Display Rate</label><input class="form-ctrl" value="2800" type="number"/></div>
+            </div>
+            <p style="font-size:0.75rem;color:var(--muted)">This rate is used to show an indicative CDF price on the booking form. Update it regularly to reflect market rates.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page-section" id="page-settings">
+      <div class="topbar"><h1 class="page-title">Site Settings</h1><div class="topbar-actions"><button class="btn-sm btn-gold" onclick="showToast('Saved','Settings saved successfully.')">Save Changes</button></div></div>
+      <div class="content">
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Business Info</span></div>
+            <div class="panel-body">
+              <div class="form-group"><label class="form-label">Business Name</label><input class="form-ctrl" value="M&M Concierge"/></div>
+              <div class="form-group"><label class="form-label">WhatsApp Number</label><input class="form-ctrl" value="+243 000 000 000"/></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-ctrl" value="hello@mmconcierge.cd"/></div>
+              <div class="form-group"><label class="form-label">City</label><input class="form-ctrl" value="Kinshasa, DRC"/></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Feature Flags</span></div>
+            <div class="panel-body">
+              <div class="toggle-row"><div><div class="toggle-label">Direct Booking Enabled</div><div class="toggle-desc">Show "Book Directly" on all experience pages</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div><div class="toggle-label">Show CDF Prices</div><div class="toggle-desc">Display CDF equivalent alongside USD</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div><div class="toggle-label">WhatsApp Float Button</div><div class="toggle-desc">Show floating WhatsApp CTA on all pages</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div><div class="toggle-label">Maintenance Mode</div><div class="toggle-desc">Show maintenance page to visitors</div></div><label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main -->
+</div><!-- end adminApp -->
+
+<!-- EXPERIENCE MODAL -->
+<div class="modal-overlay" id="expModal">
+  <div class="modal">
+    <div class="modal-h"><span class="modal-h-title">New Experience</span><button class="modal-x" onclick="closeExpModal()">✕</button></div>
+    <div class="modal-b">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-ctrl" placeholder="Experience title in English"/></div>
+        <div class="form-group"><label class="form-label">Title (FR)</label><input class="form-ctrl" placeholder="Titre de l'expérience en français"/></div>
+      </div>
+      <div class="form-grid-3">
+        <div class="form-group"><label class="form-label">Price (USD)</label><input class="form-ctrl" type="number" placeholder="150"/></div>
+        <div class="form-group"><label class="form-label">Duration</label><input class="form-ctrl" placeholder="Full Day (11h)"/></div>
+        <div class="form-group"><label class="form-label">Category</label><select class="form-ctrl"><option>City Tours</option><option>Wildlife</option><option>Culture</option><option>Food</option><option>VIP</option></select></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Group Type</label><select class="form-ctrl"><option>Private</option><option>Group</option><option>Private / Group</option></select></div>
+        <div class="form-group"><label class="form-label">Airbnb URL</label><input class="form-ctrl" placeholder="https://airbnb.com/experiences/..."/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description (EN)</label><textarea class="form-ctrl" rows="3" placeholder="Short description..."></textarea></div>
+      <div class="form-group"><label class="form-label">Description (FR)</label><textarea class="form-ctrl" rows="3" placeholder="Description courte..."></textarea></div>
+      <div class="toggle-row" style="margin-top:0.5rem"><div><div class="toggle-label">Enable Direct Booking</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Published</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+    </div>
+    <div class="modal-f"><button class="btn-sm btn-ghost" onclick="closeExpModal()">Cancel</button><button class="btn-sm btn-gold" onclick="saveExp()">Save Experience</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><strong id="toastTitle"></strong><span id="toastMsg"></span></div>
+
+<script>
+const expData=[
+  {title:'Kinshasa VIP City Tour',cat:'City Tours',price:180,duration:'Full Day',airbnb:true,direct:true,status:'Published'},
+  {title:'Lola ya Bonobo Luxury Visit',cat:'Wildlife',price:95,duration:'Half Day',airbnb:true,direct:true,status:'Published'},
+  {title:'Congo River Sunset Cruise',cat:'VIP',price:220,duration:'4 hours',airbnb:true,direct:true,status:'Published'},
+  {title:'Fine Dining & Nightlife',cat:'Food',price:150,duration:'Evening',airbnb:true,direct:true,status:'Published'},
+  {title:'Cultural Immersion Day',cat:'Culture',price:85,duration:'Full Day',airbnb:false,direct:true,status:'Published'},
+];
+
+function renderExpTable(){
+  document.getElementById('expTableBody').innerHTML = expData.map((e,i)=>`
+    <tr>
+      <td>${e.title}</td>
+      <td>${e.cat}</td>
+      <td>$${e.price}</td>
+      <td>${e.duration}</td>
+      <td>${e.airbnb?'<span class="badge-status status-confirmed">On</span>':'<span class="badge-status status-cancelled">Off</span>'}</td>
+      <td>${e.direct?'<span class="badge-status status-confirmed">On</span>':'<span class="badge-status status-cancelled">Off</span>'}</td>
+      <td><span class="badge-status status-confirmed">Published</span></td>
+      <td><button class="btn-sm btn-ghost" style="margin-right:4px">Edit</button><button class="btn-sm btn-danger" onclick="deleteExp(${i})">Delete</button></td>
+    </tr>`).join('');
+}
+
+function deleteExp(i){expData.splice(i,1);renderExpTable();showToast('Deleted','Experience removed.');}
+
+function showPage(id){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if(id==='experiences') renderExpTable();
+}
+
+function doLogin(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminApp').classList.add('visible');
+}
+
+function doLogout(){
+  document.getElementById('adminApp').classList.remove('visible');
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+function confirmBooking(btn){
+  const row = btn.closest('tr');
+  const badge = row.querySelector('.badge-status');
+  badge.className='badge-status status-confirmed';
+  badge.textContent='Confirmed';
+  btn.remove();
+  showToast('Confirmed','Booking confirmed. Confirmation email sent.');
+}
+
+function cancelBooking(btn){
+  const row = btn.closest('tr');
+  const badge = row.querySelector('.badge-status');
+  badge.className='badge-status status-cancelled';
+  badge.textContent='Cancelled';
+  btn.closest('td').querySelectorAll('button').forEach(b=>b.remove());
+  showToast('Cancelled','Booking has been cancelled.');
+}
+
+function openExpModal(){document.getElementById('expModal').classList.add('open');}
+function closeExpModal(){document.getElementById('expModal').classList.remove('open');}
+function saveExp(){closeExpModal();showToast('Saved','New experience has been created.');}
+
+function showToast(title,msg){
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4000);
+}
+
+document.getElementById('expModal').addEventListener('click',function(e){if(e.target===this)closeExpModal();});
+renderExpTable();
+</script>
+</body>
+</html>
